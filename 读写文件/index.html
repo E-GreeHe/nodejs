@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<script>
+		//protogenesis ajax read data
+		//原生ajax 读取数据  当没有nodejs的读写方法的时候 一个页面请求多个数据 ajax嵌套很麻烦
+		//解决办法 promise或者nodejs的读写流
+		function ajax(url,callback){
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET",url,true);
+			xhr.send();
+			xhr.onreadystatechange = function(){
+				//状态
+				if(xhr.readyState ==4 && xhr.status == 200){
+					//成功执行回调  发送数据
+					callback(xhr.responseText);
+				}
+			}
+		}
+		//example
+		ajax("./api/test.php",function(data){
+			console.log(data);
+			//request begin
+			ajax("./api/test1.php",function(data){
+				console.log(data);
+				ajax("./api/test2.php",function(data){
+					console.log(data);
+				}
+			}
+		})
+	</script>
+	<body>
+	</body>
+</html>
