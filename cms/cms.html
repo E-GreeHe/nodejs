@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<link rel="stylesheet" href="css/bootstrap.css"/>
+	
+	<body>
+		<div ng-controller="indexCtrl">
+			<select class="form-control input-lg" ng-model="channel">
+				<option value="4">社会</option>
+				<option value="6">娱乐</option>
+				<option value="7">军事</option>
+				<option value="8">热点</option>
+			</select>
+			<input type="text" class="form-control" ng-model="title" placeholder="标题" />
+			<input type="text" class="form-control" ng-model="texts" placeholder="内容" />
+			<button class="btn btn-default" ng-click="add()">增加新闻</button>
+			<button class="btn btn-default" ng-click="search()">查询新闻</button>
+			<table class="table table-bordered">
+				<tr>
+					<th>ID</th>
+					<th>标题</th>
+					<th>内容</th>
+					<th>删除</th>
+					<th>修改</th>
+				</tr>
+				<tr ng-repeat="new in newss">
+					<td>{{new.id}}</td>
+					<td>{{new.title}}</td>
+					<td>{{new.text}}</td>
+					<td><input class="btn btn-default" ng-click="delete(new.id)" type="button" value="删除"></td>
+					<td><input class="btn btn-default" ng-click="revise(new.id)" type="button" value="修改"></td>
+				</tr>
+			</table>
+		</div>
+	</body>
+	<script src="js/angular.js"></script>
+	<script>
+		var app = angular.module("crmApp",[]);
+		app.controller("indexCtrl",function($scope,$http,$window){
+			//默认标题
+			$scope.channel = "4";
+			$scope.search = function(){
+				$http({
+					url:"http://localhost:12346/search"
+				}).then(function(data){
+					console.log(data.data.news);
+					$scope.newss = data.data.news;
+				});
+			};
+			//一进来就显示
+			$scope.search();
+			//增加
+			$scope.add = function(){
+				$http({
+					url:"http://localhost:12346/add",
+					params:{
+						title:$scope.title,
+						texts:$scope.texts,
+						channel:$scope.channel
+					}
+				}).then(function(data){
+					$scope.newss = data.data.news;
+				})
+			};
+			//删除
+			$scope.delete = function(id){
+				$http({
+					url: "http://localhost:12346/delete",
+					params:{
+						id: id
+					}
+				}).then(function(data){
+					$scope.newss = data.data.news;
+				})
+			}
+			//修改
+			$scope.revise = function(id){
+				//跳转到修改页面
+				$window.location.href = "revise.html#!/?id=" + id;
+			}
+		})
+		angular.bootstrap(document,["crmApp"]);
+	</script>
+</html>
